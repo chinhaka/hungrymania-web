@@ -30,7 +30,7 @@ export default function Footer() {
         <div>
           <h4 className="text-white font-bold text-sm mb-3">For Restaurant Owners</h4>
           <p className="text-xs text-gray-400 mb-3">Want to register your restaurant and manage branches?</p>
-          <Link href="/register-restaurant" className="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-4 py-2 rounded-lg transition">
+          <Link href="/register/restaurant" className="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-4 py-2 rounded-lg transition">
             Register Restaurant Here &rarr;
           </Link>
         </div>

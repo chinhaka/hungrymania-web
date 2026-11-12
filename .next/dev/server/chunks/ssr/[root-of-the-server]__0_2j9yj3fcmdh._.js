@@ -688,7 +688,7 @@ function Footer() {
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                href: "/register-restaurant",
+                                href: "/register/restaurant",
                                 className: "inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-4 py-2 rounded-lg transition",
                                 children: "Register Restaurant Here →"
                             }, void 0, false, {
@@ -968,7 +968,7 @@ __turbopack_context__.s([
     "registerUser",
     ()=>registerUser
 ]);
-const API_URL = ("TURBOPACK compile-time value", "https://admin.hungrymania.com/api");
+const API_URL = ("TURBOPACK compile-time value", "http://127.0.0.1:8000/api");
 async function fetchBranches(searchQuery = '', cityId = '', page = 1) {
     try {
         const res = await fetch(`${API_URL}/branches?search=${searchQuery}&city_id=${cityId}&page=${page}`, {

@@ -19,7 +19,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$BranchClientVi
 ;
 async function generateStaticParams() {
     try {
-        const apiUrl = ("TURBOPACK compile-time value", "https://admin.hungrymania.com/api") || 'http://localhost/hungrymenia-api/public/api';
+        const apiUrl = ("TURBOPACK compile-time value", "http://127.0.0.1:8000/api") || 'http://localhost/hungrymenia-api/public/api';
         const res = await fetch(`${apiUrl}/branches`, {
             cache: 'no-store'
         });

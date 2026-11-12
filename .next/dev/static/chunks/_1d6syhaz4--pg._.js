@@ -19,7 +19,7 @@ var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.sign
 ;
 ;
 ;
-const IMAGE_BASE_URL = ("TURBOPACK compile-time value", "https://admin.hungrymania.com/uploads/") || 'http://localhost/hungrymenia-api/public/storage/';
+const IMAGE_BASE_URL = ("TURBOPACK compile-time value", "http://127.0.0.1:8000/uploads/") || 'http://localhost/hungrymenia-api/public/storage/';
 function FoodImageSlider({ images, itemName }) {
     _s();
     const validImages = images.filter(Boolean);
