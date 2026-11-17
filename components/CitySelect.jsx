@@ -38,11 +38,13 @@ export default function CitySelect({ selectedCity, setSelectedCity }) {
     }
   }
 
+  // Strict city-only filtering
+  const query = searchQuery.toLowerCase().trim();
   const filteredDistricts = districts.map((district) => {
     const matchingCities = district.cities?.filter((city) =>
-      city.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      district.name.toLowerCase().includes(searchQuery.toLowerCase())
+      city.name.toLowerCase().includes(query)
     );
+
     return {
       ...district,
       cities: matchingCities,
@@ -63,7 +65,7 @@ export default function CitySelect({ selectedCity, setSelectedCity }) {
         <span className="text-xs text-gray-400 ml-2">&#9662;</span>
       </div>
 
-      {/* Dropdown Menu Popup - High z-index and shadow to ensure it floats on top */}
+      {/* Dropdown Menu Popup */}
       {isOpen && (
         <div className="absolute left-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-[999] overflow-hidden text-left">
           {/* Search Box */}
@@ -71,7 +73,7 @@ export default function CitySelect({ selectedCity, setSelectedCity }) {
             <input
               type="text"
               autoFocus
-              placeholder="Search district or city..."
+              placeholder="Search city name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1B873D]"
@@ -94,7 +96,7 @@ export default function CitySelect({ selectedCity, setSelectedCity }) {
             {loading ? (
               <div className="p-6 text-center text-xs text-gray-400">Loading locations...</div>
             ) : filteredDistricts.length === 0 ? (
-              <div className="p-6 text-center text-xs text-gray-400">No locations found</div>
+              <div className="p-6 text-center text-xs text-gray-400">No cities found</div>
             ) : (
               filteredDistricts.map((district) => (
                 <div key={district.id} className="py-1">

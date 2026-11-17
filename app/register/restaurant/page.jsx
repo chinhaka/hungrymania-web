@@ -5,6 +5,78 @@ import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/hungrymenia-api/public/api';
 
+
+// --- Searchable City Dropdown Component ---
+function SearchableCitySelect({ districts, value, onChange }) {
+  const [query, setQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Flatten all cities with their district name for easy searching
+  const allCities = districts.flatMap((district) =>
+    (district.cities || []).map((city) => ({
+      ...city,
+      district_name: district.name,
+    }))
+  );
+
+  // Filter cities based on user input
+  const filteredCities = query === ''
+    ? allCities
+    : allCities.filter((city) =>
+        city.name.toLowerCase().includes(query.toLowerCase()) ||
+        city.district_name.toLowerCase().includes(query.toLowerCase())
+      );
+
+  // Find currently selected city name for display
+  const selectedCity = allCities.find((c) => String(c.id) === String(value));
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        placeholder="Type to search city (e.g. Colombo)..."
+        value={isOpen ? query : (selectedCity ? `${selectedCity.name} (${selectedCity.district_name})` : query)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setIsOpen(true);
+        }}
+        onFocus={() => {
+          setIsOpen(true);
+          setQuery('');
+        }}
+        className="w-full px-4 py-2.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-xl shadow-xs focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none placeholder:text-gray-400"
+      />
+
+      {isOpen && (
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+          {filteredCities.length > 0 ? (
+            filteredCities.map((city) => (
+              <div
+                key={city.id}
+                onClick={() => {
+                  onChange(city.id);
+                  setQuery('');
+                  setIsOpen(false);
+                }}
+                className="px-4 py-2 text-xs text-gray-800 hover:bg-green-50 hover:text-[#1B873D] cursor-pointer flex justify-between items-center transition"
+              >
+                <span className="font-semibold">{city.name}</span>
+                <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">
+                  {city.district_name}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="px-4 py-3 text-xs text-gray-500 text-center">
+              No cities found matching &quot;{query}&quot;
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- Reusable Drag & Drop Image Uploader ---
 function DragDropImageUploader({ 
   images, 
@@ -204,14 +276,25 @@ export default function RestaurantRegistrationPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      // If single restaurant, automatically keep branch name synchronized with restaurant name
+      if (name === 'restaurant_name' && prev.registration_type === 'single') {
+        updated.branches = [
+          { ...prev.branches[0], name: value }
+        ];
+      }
+      return updated;
+    });
   };
 
   const handleTypeSwitch = (type) => {
     setFormData((prev) => ({
       ...prev,
       registration_type: type,
-      branches: type === 'single' ? [prev.branches[0]] : prev.branches
+      branches: type === 'single' 
+        ? [{ ...prev.branches[0], name: prev.restaurant_name }] 
+        : prev.branches
     }));
   };
 
@@ -307,7 +390,9 @@ export default function RestaurantRegistrationPage() {
       dataPayload.append('admin_password_confirmation', formData.admin_password_confirmation);
 
       formData.branches.forEach((branch, index) => {
-        dataPayload.append(`branches[${index}][name]`, branch.name);
+        // For single restaurants, force branch name to match restaurant name if empty/hidden
+        const finalBranchName = formData.registration_type === 'single' ? formData.restaurant_name : branch.name;
+        dataPayload.append(`branches[${index}][name]`, finalBranchName);
         dataPayload.append(`branches[${index}][city_id]`, branch.city_id);
         dataPayload.append(`branches[${index}][address]`, branch.address);
         dataPayload.append(`branches[${index}][phone]`, branch.phone);
@@ -323,8 +408,6 @@ export default function RestaurantRegistrationPage() {
           dataPayload.append(`branches[${index}][images][]`, imgFile);
         });
       });
-
-
 
       const res = await fetch(`${API_URL}/restaurants/register`, {
         method: 'POST',
@@ -344,10 +427,9 @@ export default function RestaurantRegistrationPage() {
         throw new Error(data.message || 'Registration failed.');
       }
 
-      // Store returned registration data in sessionStorage for the summary page
-        if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined') {
         sessionStorage.setItem('hungrymenia_registered_restaurant', JSON.stringify(data));
-        }
+      }
 
       router.push('/register/restaurant/success');
     
@@ -388,7 +470,7 @@ export default function RestaurantRegistrationPage() {
                 <button
                   type="button"
                   onClick={() => handleTypeSwitch('single')}
-                  className={`p-4 rounded-2xl border text-left transition shadow-xs ${
+                  className={`p-4 rounded-2xl border text-left transition shadow-xs cursor-pointer ${
                     formData.registration_type === 'single'
                       ? 'border-[#1B873D] bg-green-50 text-[#1B873D] font-bold'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
@@ -401,7 +483,7 @@ export default function RestaurantRegistrationPage() {
                 <button
                   type="button"
                   onClick={() => handleTypeSwitch('network')}
-                  className={`p-4 rounded-2xl border text-left transition shadow-xs ${
+                  className={`p-4 rounded-2xl border text-left transition shadow-xs cursor-pointer ${
                     formData.registration_type === 'network'
                       ? 'border-[#1B873D] bg-green-50 text-[#1B873D] font-bold'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
@@ -557,7 +639,7 @@ export default function RestaurantRegistrationPage() {
                 <div key={index} className="p-6 bg-slate-50 border border-slate-300 rounded-3xl space-y-5 shadow-xs">
                   <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                     <span className="text-xs font-extrabold text-[#1B873D] uppercase tracking-wider">
-                      Branch #{index + 1}
+                      {formData.registration_type === 'single' ? 'Branch Details' : `Branch #${index + 1}`}
                     </span>
                     {formData.registration_type === 'network' && formData.branches.length > 1 && (
                       <button
@@ -571,37 +653,29 @@ export default function RestaurantRegistrationPage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-extrabold text-gray-800 mb-1">Branch Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={branch.name}
-                        onChange={(e) => handleBranchChange(index, 'name', e.target.value)}
-                        placeholder="e.g. Colombo Branch"
-                        className="w-full px-4 py-2.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-xl shadow-xs focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none placeholder:text-gray-400"
-                      />
-                    </div>
+                    
+                    {/* Conditionally hide Branch Name input if registration_type is single */}
+                    {formData.registration_type === 'network' && (
+                      <div>
+                        <label className="block text-xs font-extrabold text-gray-800 mb-1">Branch Name</label>
+                        <input
+                          type="text"
+                          required
+                          value={branch.name}
+                          onChange={(e) => handleBranchChange(index, 'name', e.target.value)}
+                          placeholder="e.g. Colombo Branch"
+                          className="w-full px-4 py-2.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-xl shadow-xs focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none placeholder:text-gray-400"
+                        />
+                      </div>
+                    )}
 
-                    <div>
+                    <div className={formData.registration_type === 'single' ? 'md:col-span-2' : ''}>
                       <label className="block text-xs font-extrabold text-gray-800 mb-1">City</label>
-                      <select
-                        required
+                      <SearchableCitySelect
+                        districts={districts}
                         value={branch.city_id}
-                        onChange={(e) => handleBranchChange(index, 'city_id', e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-xl shadow-xs focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none"
-                      >
-                        <option value="">Select City (Grouped by District)</option>
-                        {districts.map((district) => (
-                          <optgroup key={district.id} label={`📍 ${district.name} District`}>
-                            {district.cities?.map((city) => (
-                              <option key={city.id} value={city.id}>
-                                {city.name}
-                              </option>
-                            ))}
-                          </optgroup>
-                        ))}
-                      </select>
+                        onChange={(cityId) => handleBranchChange(index, 'city_id', cityId)}
+                      />
                     </div>
 
                     <div className="md:col-span-2">
@@ -663,7 +737,7 @@ export default function RestaurantRegistrationPage() {
                         images={branch.images}
                         onImagesChange={(updated) => handleBranchImagesUpdate(index, updated)}
                         maxImages={5}
-                        label={`Branch #${index + 1} Photos (At least 1 required)`}
+                        label={formData.registration_type === 'single' ? "Branch Photos (At least 1 required)" : `Branch #${index + 1} Photos (At least 1 required)`}
                       />
                     </div>
 
@@ -721,14 +795,14 @@ export default function RestaurantRegistrationPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-xl font-bold text-xs transition cursor-pointer"
+                  className="bg-slate-200 hover:bg-slate-300 text-gray-800 px-6 py-3 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   &larr; Back
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-[#1B873D] hover:bg-[#146C30] text-white px-8 py-3 rounded-xl font-bold text-xs shadow-md disabled:opacity-50 transition cursor-pointer"
+                  className="bg-[#1B873D] hover:bg-[#146C30] text-white px-8 py-3 rounded-xl font-bold text-xs shadow-md transition disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? 'Registering...' : 'Complete Registration 🚀'}
                 </button>

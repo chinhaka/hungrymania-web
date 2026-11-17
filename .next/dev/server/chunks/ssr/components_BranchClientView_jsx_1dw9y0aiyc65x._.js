@@ -17,9 +17,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 ;
 ;
-const IMAGE_BASE_URL = ("TURBOPACK compile-time value", "http://127.0.0.1:8000/uploads/") || 'http://localhost/hungrymenia-api/public/storage/';
+const IMAGE_BASE_URL = ("TURBOPACK compile-time value", "https://admin.hungrymania.com/uploads/") || 'http://localhost/hungrymenia-api/public/uploads/';
 function FoodImageSlider({ images, itemName }) {
-    const validImages = images.filter(Boolean);
+    const validImages = (images || []).filter(Boolean);
     const [currentIndex, setCurrentIndex] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(0);
     if (validImages.length === 0) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -51,7 +51,7 @@ function FoodImageSlider({ images, itemName }) {
         className: "h-48 bg-gray-100 relative overflow-hidden group",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                src: `${IMAGE_BASE_URL}${validImages[currentIndex]}`,
+                src: validImages[currentIndex].startsWith('http') ? validImages[currentIndex] : `${IMAGE_BASE_URL}${validImages[currentIndex]}`,
                 alt: `${itemName} photo ${currentIndex + 1}`,
                 className: "w-full h-full object-cover transition duration-300"
             }, void 0, false, {
@@ -63,7 +63,7 @@ function FoodImageSlider({ images, itemName }) {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                         onClick: prevImage,
-                        className: "absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition text-xs z-10",
+                        className: "absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition text-xs z-10 cursor-pointer",
                         children: "❮"
                     }, void 0, false, {
                         fileName: "[project]/components/BranchClientView.jsx",
@@ -72,7 +72,7 @@ function FoodImageSlider({ images, itemName }) {
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                         onClick: nextImage,
-                        className: "absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition text-xs z-10",
+                        className: "absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition text-xs z-10 cursor-pointer",
                         children: "❯"
                     }, void 0, false, {
                         fileName: "[project]/components/BranchClientView.jsx",
@@ -116,6 +116,7 @@ function BranchClientView() {
     const [selectedMealTime, setSelectedMealTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('all');
     const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
     const [currentPage, setCurrentPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(1);
+    const [bannerIndex, setBannerIndex] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(0);
     const itemsPerPage = 9;
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         if (!branchId) return;
@@ -128,6 +129,24 @@ function BranchClientView() {
         loadData();
     }, [
         branchId
+    ]);
+    // Collect all available branch photos for the top hero banner
+    const branchPhotos = branch ? [
+        branch.image_1,
+        branch.image_2,
+        branch.image_3,
+        branch.image_4,
+        branch.image_5
+    ].filter(Boolean) : [];
+    // Auto-swipe banner photos every 4 seconds
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (branchPhotos.length <= 1) return;
+        const interval = setInterval(()=>{
+            setBannerIndex((prev)=>(prev + 1) % branchPhotos.length);
+        }, 4000);
+        return ()=>clearInterval(interval);
+    }, [
+        branchPhotos.length
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         setCurrentPage(1);
@@ -145,12 +164,12 @@ function BranchClientView() {
                 children: "Loading branch & menu..."
             }, void 0, false, {
                 fileName: "[project]/components/BranchClientView.jsx",
-                lineNumber: 105,
+                lineNumber: 124,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/BranchClientView.jsx",
-            lineNumber: 104,
+            lineNumber: 123,
             columnNumber: 7
         }, this);
     }
@@ -163,7 +182,7 @@ function BranchClientView() {
                     children: "Branch Not Found"
                 }, void 0, false, {
                     fileName: "[project]/components/BranchClientView.jsx",
-                    lineNumber: 113,
+                    lineNumber: 132,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -171,7 +190,7 @@ function BranchClientView() {
                     children: "The restaurant branch you are looking for does not exist or is inactive."
                 }, void 0, false, {
                     fileName: "[project]/components/BranchClientView.jsx",
-                    lineNumber: 114,
+                    lineNumber: 133,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -180,16 +199,17 @@ function BranchClientView() {
                     children: "Back to Home"
                 }, void 0, false, {
                     fileName: "[project]/components/BranchClientView.jsx",
-                    lineNumber: 115,
+                    lineNumber: 134,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/BranchClientView.jsx",
-            lineNumber: 112,
+            lineNumber: 131,
             columnNumber: 7
         }, this);
     }
+    const showRestaurantName = branch.restaurant?.name && branch.restaurant.name.trim().toLowerCase() !== branch.name?.trim().toLowerCase();
     const menuItems = branch.menu_items || [];
     const categories = [
         ...new Set(menuItems.map((item)=>item.menu_category?.name).filter(Boolean))
@@ -216,132 +236,182 @@ function BranchClientView() {
     const totalPages = Math.ceil(activeFilteredItems.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedItems = activeFilteredItems.slice(startIndex, startIndex + itemsPerPage);
+    const getImageUrl = (path)=>path.startsWith('http') ? path : `${IMAGE_BASE_URL}${path}`;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
         className: "min-h-screen bg-gray-50 text-gray-900 pb-16",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "bg-gradient-to-br from-[#146C30] via-[#1B873D] to-[#0f5424] text-white py-12 px-6",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center gap-5",
+                className: "relative h-80 md:h-96 w-full overflow-hidden bg-neutral-900",
+                children: [
+                    branchPhotos.length > 0 ? branchPhotos.map((photo, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                            src: getImageUrl(photo),
+                            alt: `${branch.name} hero ${idx + 1}`,
+                            className: `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === bannerIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}`
+                        }, idx, false, {
+                            fileName: "[project]/components/BranchClientView.jsx",
+                            lineNumber: 179,
+                            columnNumber: 13
+                        }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                        src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+                        alt: branch.name,
+                        className: "w-full h-full object-cover opacity-80"
+                    }, void 0, false, {
+                        fileName: "[project]/components/BranchClientView.jsx",
+                        lineNumber: 189,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/30"
+                    }, void 0, false, {
+                        fileName: "[project]/components/BranchClientView.jsx",
+                        lineNumber: 197,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "absolute inset-0 flex items-end pb-8 px-6",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "max-w-7xl mx-w-full w-full mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-6",
                             children: [
-                                branch.restaurant?.logo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "w-20 h-20 rounded-2xl bg-white shadow-md overflow-hidden shrink-0 border-2 border-white/20",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                        src: `${IMAGE_BASE_URL}${branch.restaurant.logo}`,
-                                        alt: branch.restaurant.name,
-                                        className: "w-full h-full object-cover"
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 156,
-                                        columnNumber: 17
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/components/BranchClientView.jsx",
-                                    lineNumber: 155,
-                                    columnNumber: 15
-                                }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-5",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-2 inline-block",
-                                            children: branch.restaurant?.name
+                                        branch.restaurant?.logo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white shadow-xl overflow-hidden shrink-0 border-2 border-white/30",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                src: getImageUrl(branch.restaurant.logo),
+                                                alt: branch.restaurant.name,
+                                                className: "w-full h-full object-cover"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/BranchClientView.jsx",
+                                                lineNumber: 205,
+                                                columnNumber: 19
+                                            }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/BranchClientView.jsx",
-                                            lineNumber: 164,
-                                            columnNumber: 15
+                                            lineNumber: 204,
+                                            columnNumber: 17
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                                            className: "text-3xl md:text-4xl font-extrabold",
-                                            children: branch.name
-                                        }, void 0, false, {
-                                            fileName: "[project]/components/BranchClientView.jsx",
-                                            lineNumber: 167,
-                                            columnNumber: 15
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: "text-green-100 text-xs md:text-sm mt-1.5 flex items-center gap-2",
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "text-white",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    children: [
-                                                        "📍 ",
-                                                        branch.address
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/components/BranchClientView.jsx",
-                                                    lineNumber: 169,
-                                                    columnNumber: 17
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    children: "•"
+                                                showRestaurantName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-2 inline-block backdrop-blur-md",
+                                                    children: branch.restaurant?.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/BranchClientView.jsx",
-                                                    lineNumber: 170,
+                                                    lineNumber: 214,
+                                                    columnNumber: 19
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                                    className: "text-3xl md:text-5xl font-extrabold tracking-tight",
+                                                    children: branch.name
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/BranchClientView.jsx",
+                                                    lineNumber: 218,
                                                     columnNumber: 17
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-gray-200 text-xs md:text-sm mt-2 flex items-center flex-wrap gap-2",
                                                     children: [
-                                                        "🕒 ",
-                                                        branch.open_time,
-                                                        " - ",
-                                                        branch.close_time
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            children: [
+                                                                "📍 ",
+                                                                branch.address
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/BranchClientView.jsx",
+                                                            lineNumber: 220,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            children: "•"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/BranchClientView.jsx",
+                                                            lineNumber: 221,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            children: [
+                                                                "🕒 ",
+                                                                branch.open_time,
+                                                                " - ",
+                                                                branch.close_time
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/BranchClientView.jsx",
+                                                            lineNumber: 222,
+                                                            columnNumber: 19
+                                                        }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/BranchClientView.jsx",
-                                                    lineNumber: 171,
+                                                    lineNumber: 219,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/BranchClientView.jsx",
-                                            lineNumber: 168,
+                                            lineNumber: 212,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/BranchClientView.jsx",
-                                    lineNumber: 163,
+                                    lineNumber: 202,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-3 shrink-0",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        className: "bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl transition cursor-pointer",
+                                        children: "📅 Reserve Table"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/BranchClientView.jsx",
+                                        lineNumber: 228,
+                                        columnNumber: 15
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/components/BranchClientView.jsx",
+                                    lineNumber: 227,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/BranchClientView.jsx",
-                            lineNumber: 153,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center gap-3",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                className: "bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition",
-                                children: "📅 Reserve Table"
-                            }, void 0, false, {
-                                fileName: "[project]/components/BranchClientView.jsx",
-                                lineNumber: 177,
-                                columnNumber: 13
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/components/BranchClientView.jsx",
-                            lineNumber: 176,
+                            lineNumber: 201,
                             columnNumber: 11
                         }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/components/BranchClientView.jsx",
-                    lineNumber: 152,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
+                    }, void 0, false, {
+                        fileName: "[project]/components/BranchClientView.jsx",
+                        lineNumber: 200,
+                        columnNumber: 9
+                    }, this),
+                    branchPhotos.length > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "absolute top-4 right-4 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full z-10",
+                        children: branchPhotos.map((_, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>setBannerIndex(idx),
+                                className: `h-1.5 rounded-full transition-all cursor-pointer ${idx === bannerIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'}`
+                            }, idx, false, {
+                                fileName: "[project]/components/BranchClientView.jsx",
+                                lineNumber: 239,
+                                columnNumber: 15
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/components/BranchClientView.jsx",
+                        lineNumber: 237,
+                        columnNumber: 11
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "[project]/components/BranchClientView.jsx",
-                lineNumber: 151,
+                lineNumber: 176,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "max-w-7xl mx-auto px-6 mt-8 space-y-4",
+                className: "max-w-7xl mx-auto px-6 mt-8 space-y-6",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4",
+                        className: "bg-white p-5 rounded-3xl shadow-sm border border-slate-200/90 space-y-4",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex flex-col md:flex-row justify-between items-center gap-4 pb-4 border-b border-gray-100",
@@ -354,7 +424,7 @@ function BranchClientView() {
                                                 children: "Meal:"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                lineNumber: 188,
+                                                lineNumber: 256,
                                                 columnNumber: 15
                                             }, this),
                                             [
@@ -364,17 +434,17 @@ function BranchClientView() {
                                                 'dinner'
                                             ].map((meal)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                     onClick: ()=>setSelectedMealTime(meal),
-                                                    className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition ${selectedMealTime === meal ? 'bg-amber-500 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
+                                                    className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition cursor-pointer ${selectedMealTime === meal ? 'bg-amber-500 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
                                                     children: meal
                                                 }, meal, false, {
                                                     fileName: "[project]/components/BranchClientView.jsx",
-                                                    lineNumber: 190,
+                                                    lineNumber: 258,
                                                     columnNumber: 17
                                                 }, this))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 187,
+                                        lineNumber: 255,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -384,21 +454,21 @@ function BranchClientView() {
                                             placeholder: "Search menu dishes...",
                                             value: searchQuery,
                                             onChange: (e)=>setSearchQuery(e.target.value),
-                                            className: "w-full px-4 py-2 text-xs text-gray-900 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1B873D]"
+                                            className: "w-full px-4 py-2 text-xs text-gray-900 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1B873D]"
                                         }, void 0, false, {
                                             fileName: "[project]/components/BranchClientView.jsx",
-                                            lineNumber: 205,
+                                            lineNumber: 273,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 204,
+                                        lineNumber: 272,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/BranchClientView.jsx",
-                                lineNumber: 186,
+                                lineNumber: 254,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -409,31 +479,31 @@ function BranchClientView() {
                                         children: "Category:"
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 216,
+                                        lineNumber: 284,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>setSelectedCategory('all'),
-                                        className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 ${selectedCategory === 'all' ? 'bg-[#1B873D] text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
+                                        className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer ${selectedCategory === 'all' ? 'bg-[#1B873D] text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
                                         children: "All Categories"
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 217,
+                                        lineNumber: 285,
                                         columnNumber: 13
                                     }, this),
                                     categories.map((cat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: ()=>setSelectedCategory(cat),
-                                            className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 ${selectedCategory === cat ? 'bg-[#1B873D] text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
+                                            className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer ${selectedCategory === cat ? 'bg-[#1B873D] text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
                                             children: cat
                                         }, cat, false, {
                                             fileName: "[project]/components/BranchClientView.jsx",
-                                            lineNumber: 228,
+                                            lineNumber: 296,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/BranchClientView.jsx",
-                                lineNumber: 215,
+                                lineNumber: 283,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -444,37 +514,37 @@ function BranchClientView() {
                                         children: "Type:"
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 243,
+                                        lineNumber: 311,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>setSelectedFoodType('all'),
-                                        className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 ${selectedFoodType === 'all' ? 'bg-gray-800 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
+                                        className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer ${selectedFoodType === 'all' ? 'bg-gray-800 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
                                         children: "All Types"
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 244,
+                                        lineNumber: 312,
                                         columnNumber: 13
                                     }, this),
                                     foodTypes.map((type)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: ()=>setSelectedFoodType(type),
-                                            className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 ${selectedFoodType === type ? 'bg-gray-800 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
+                                            className: `px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer ${selectedFoodType === type ? 'bg-gray-800 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`,
                                             children: type
                                         }, type, false, {
                                             fileName: "[project]/components/BranchClientView.jsx",
-                                            lineNumber: 255,
+                                            lineNumber: 323,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/BranchClientView.jsx",
-                                lineNumber: 242,
+                                lineNumber: 310,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/BranchClientView.jsx",
-                        lineNumber: 185,
+                        lineNumber: 253,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -482,7 +552,7 @@ function BranchClientView() {
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex justify-between items-center mb-6",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                    className: "text-xl font-bold text-gray-900",
+                                    className: "text-xl font-extrabold text-gray-900",
                                     children: [
                                         "Menu Items (",
                                         activeFilteredItems.length,
@@ -490,23 +560,23 @@ function BranchClientView() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/BranchClientView.jsx",
-                                    lineNumber: 272,
+                                    lineNumber: 340,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/BranchClientView.jsx",
-                                lineNumber: 271,
+                                lineNumber: 339,
                                 columnNumber: 11
                             }, this),
                             paginatedItems.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200",
+                                className: "text-center py-16 bg-white rounded-3xl border border-dashed border-slate-200",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-gray-400 text-xs",
                                         children: "No menu items found matching your filters."
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 277,
+                                        lineNumber: 345,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -516,24 +586,24 @@ function BranchClientView() {
                                             setSelectedMealTime('all');
                                             setSearchQuery('');
                                         },
-                                        className: "mt-3 text-xs text-[#1B873D] font-bold underline",
+                                        className: "mt-3 text-xs text-[#1B873D] font-bold underline cursor-pointer",
                                         children: "Reset all filters"
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 278,
+                                        lineNumber: 346,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/BranchClientView.jsx",
-                                lineNumber: 276,
+                                lineNumber: 344,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "grid grid-cols-1 md:grid-cols-3 gap-6",
                                         children: paginatedItems.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition",
+                                                className: "bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden flex flex-col justify-between hover:shadow-lg transition",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         children: [
@@ -551,117 +621,117 @@ function BranchClientView() {
                                                                         itemName: item.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 292,
+                                                                        lineNumber: 360,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     item.food_type && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "absolute top-3 left-3 bg-white/90 backdrop-blur-xs text-gray-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs z-10",
+                                                                        className: "absolute top-3 left-3 bg-white/90 backdrop-blur-md text-gray-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-xs z-10",
                                                                         children: item.food_type.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 298,
+                                                                        lineNumber: 366,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     item.menu_category && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "absolute top-3 right-3 bg-[#1B873D]/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs z-10",
+                                                                        className: "absolute top-3 right-3 bg-[#1B873D]/90 backdrop-blur-md text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-xs z-10",
                                                                         children: item.menu_category.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 304,
+                                                                        lineNumber: 372,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                lineNumber: 291,
+                                                                lineNumber: 359,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "p-4",
+                                                                className: "p-5",
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "flex justify-between items-start gap-2",
                                                                         children: [
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                                                className: "text-base font-bold text-gray-900",
+                                                                                className: "text-base font-extrabold text-gray-900",
                                                                                 children: item.name
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                                lineNumber: 312,
+                                                                                lineNumber: 380,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md font-medium shrink-0",
+                                                                                className: "text-[11px] bg-slate-100 text-gray-600 px-2.5 py-1 rounded-xl font-bold shrink-0 border border-slate-200",
                                                                                 children: [
                                                                                     "Serves ",
                                                                                     item.serving_size || 1
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                                lineNumber: 313,
+                                                                                lineNumber: 381,
                                                                                 columnNumber: 27
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 311,
+                                                                        lineNumber: 379,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                        className: "text-gray-500 text-xs mt-1 line-clamp-2",
+                                                                        className: "text-gray-500 text-xs mt-1.5 line-clamp-2",
                                                                         children: item.description
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 317,
+                                                                        lineNumber: 385,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex flex-wrap gap-1.5 mt-3",
+                                                                        className: "flex flex-wrap gap-1.5 mt-3.5",
                                                                         children: [
                                                                             item.breakfast === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md font-medium border border-amber-200/50",
+                                                                                className: "text-[10px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg font-bold border border-amber-200/60",
                                                                                 children: "☀️ Breakfast"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                                lineNumber: 321,
+                                                                                lineNumber: 389,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             item.lunch === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-[10px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md font-medium border border-orange-200/50",
+                                                                                className: "text-[10px] bg-orange-50 text-orange-700 px-2.5 py-1 rounded-lg font-bold border border-orange-200/60",
                                                                                 children: "🍽️ Lunch"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                                lineNumber: 326,
+                                                                                lineNumber: 394,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             item.dinner === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md font-medium border border-indigo-200/50",
+                                                                                className: "text-[10px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg font-bold border border-indigo-200/60",
                                                                                 children: "🌙 Dinner"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                                lineNumber: 331,
+                                                                                lineNumber: 399,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 319,
+                                                                        lineNumber: 387,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                lineNumber: 310,
+                                                                lineNumber: 378,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                        lineNumber: 290,
+                                                        lineNumber: 358,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "p-4 pt-0 border-t border-gray-50 mt-4 flex items-center justify-between",
+                                                        className: "p-5 pt-0 border-t border-slate-100 mt-4 flex items-center justify-between",
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 children: [
@@ -676,7 +746,7 @@ function BranchClientView() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                                lineNumber: 343,
+                                                                                lineNumber: 411,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -687,13 +757,13 @@ function BranchClientView() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                                lineNumber: 344,
+                                                                                lineNumber: 412,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 342,
+                                                                        lineNumber: 410,
                                                                         columnNumber: 27
                                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                         className: "text-sm font-extrabold text-gray-900",
@@ -703,11 +773,11 @@ function BranchClientView() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 347,
+                                                                        lineNumber: 415,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "text-[10px] text-gray-400 block",
+                                                                        className: "text-[10px] text-gray-400 block mt-0.5",
                                                                         children: [
                                                                             "⏱️ ",
                                                                             item.preparation_time || 15,
@@ -715,38 +785,38 @@ function BranchClientView() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                                        lineNumber: 349,
+                                                                        lineNumber: 417,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                lineNumber: 340,
+                                                                lineNumber: 408,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                className: "bg-green-50 text-[#1B873D] hover:bg-[#1B873D] hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition",
+                                                                className: "bg-green-50 text-[#1B873D] hover:bg-[#1B873D] hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer",
                                                                 children: "+ Add"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                                lineNumber: 352,
+                                                                lineNumber: 420,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/BranchClientView.jsx",
-                                                        lineNumber: 339,
+                                                        lineNumber: 407,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, item.id, true, {
                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                lineNumber: 289,
+                                                lineNumber: 357,
                                                 columnNumber: 19
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 287,
+                                        lineNumber: 355,
                                         columnNumber: 15
                                     }, this),
                                     totalPages > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -755,11 +825,11 @@ function BranchClientView() {
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: ()=>setCurrentPage((prev)=>Math.max(prev - 1, 1)),
                                                 disabled: currentPage === 1,
-                                                className: "px-4 py-2 rounded-xl text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs",
+                                                className: "px-4 py-2 rounded-xl text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs cursor-pointer",
                                                 children: "← Previous"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                lineNumber: 362,
+                                                lineNumber: 430,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -772,47 +842,47 @@ function BranchClientView() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                lineNumber: 370,
+                                                lineNumber: 438,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: ()=>setCurrentPage((prev)=>Math.min(prev + 1, totalPages)),
                                                 disabled: currentPage === totalPages,
-                                                className: "px-4 py-2 rounded-xl text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs",
+                                                className: "px-4 py-2 rounded-xl text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs cursor-pointer",
                                                 children: "Next →"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/BranchClientView.jsx",
-                                                lineNumber: 374,
+                                                lineNumber: 442,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/BranchClientView.jsx",
-                                        lineNumber: 361,
+                                        lineNumber: 429,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/BranchClientView.jsx",
-                                lineNumber: 286,
+                                lineNumber: 354,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/BranchClientView.jsx",
-                        lineNumber: 270,
+                        lineNumber: 338,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/BranchClientView.jsx",
-                lineNumber: 184,
+                lineNumber: 252,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/BranchClientView.jsx",
-        lineNumber: 150,
+        lineNumber: 173,
         columnNumber: 5
     }, this);
 }

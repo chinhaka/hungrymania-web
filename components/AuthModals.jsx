@@ -27,6 +27,7 @@ export default function AuthModals() {
     setLoading(false);
 
     if (res.status) {
+      localStorage.setItem('hungrymenia_token', res.token);
       login(res.user);
       setShowLoginModal(false);
       setEmail(''); setPassword('');
