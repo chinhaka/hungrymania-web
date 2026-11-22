@@ -1,5 +1,6 @@
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
+import { FavouritesProvider } from '@/context/FavouritesContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AuthModals from '@/components/AuthModals';
@@ -14,13 +15,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="antialiased bg-gray-50">
         <AuthProvider>
-          <Navbar />
-          {children}
-          <AuthModals />
-          <Footer />
+          <FavouritesProvider>
+            <Navbar />
+            {children}
+            <AuthModals />
+            <Footer />
+          </FavouritesProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
+
 

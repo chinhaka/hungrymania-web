@@ -5,6 +5,7 @@ import { fetchBranchDetails } from '@/services/api';
 import Link from 'next/link';
 import MenuSearchFilters from '@/components/MenuSearchFilters';
 import MealCard from '@/components/MealCard';
+import ReserveTableModal from '@/components/ReserveTableModal';
 
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'http://localhost/hungrymenia-api/public/uploads/';
 
@@ -14,7 +15,10 @@ function BranchContent() {
 
   const [branch, setBranch] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
+  const [isReserveOpen, setIsReserveOpen] = useState(false);
+  const [reservationBanner, setReservationBanner] = useState(null);
+
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedFoodType, setSelectedFoodType] = useState('all');
   const [selectedMealTime, setSelectedMealTime] = useState('all');
@@ -159,7 +163,11 @@ function BranchContent() {
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
-              <button className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl transition cursor-pointer">
+              <button
+                type="button"
+                onClick={() => setIsReserveOpen(true)}
+                className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl transition cursor-pointer"
+              >
                 📅 Reserve Table
               </button>
             </div>
@@ -183,6 +191,19 @@ function BranchContent() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 mt-8 space-y-6">
+        {reservationBanner && (
+          <div className="bg-green-50 border border-green-200 text-green-800 px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center justify-between gap-4 shadow-xs">
+            <span>✅ {reservationBanner}</span>
+            <button
+              type="button"
+              onClick={() => setReservationBanner(null)}
+              className="text-green-700 hover:text-green-950 font-extrabold cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         <MenuSearchFilters 
           selectedMealTime={selectedMealTime}
           setSelectedMealTime={setSelectedMealTime}
@@ -215,7 +236,7 @@ function BranchContent() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {paginatedItems.map((item) => (
-                  <MealCard key={item.id} item={item} />
+                  <MealCard key={item.id} item={item} branchDiscounts={branch.discounts || []} />
                 ))}
               </div>
 
@@ -246,6 +267,17 @@ function BranchContent() {
           )}
         </div>
       </div>
+
+      <ReserveTableModal
+        branch={branch}
+        isOpen={isReserveOpen}
+        onClose={() => setIsReserveOpen(false)}
+        onSuccess={(created) =>
+          setReservationBanner(
+            `Reservation ${created.reservation_code} submitted and is pending branch approval.`
+          )
+        }
+      />
     </main>
   );
 }

@@ -11,7 +11,6 @@ export default function BranchImageSlider({
 }) {
   const validImages = (images || []).filter(Boolean);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (validImages.length <= 1) return;
@@ -61,28 +60,6 @@ export default function BranchImageSlider({
 
       {/* Subtle Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/25 pointer-events-none" />
-
-      {/* Top Right: Frosted Glass Favorite Heart */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsFavorite(!isFavorite);
-        }}
-        className={`absolute ${
-          compact ? 'top-2.5 right-2.5 w-8 h-8' : 'top-3.5 right-3.5 w-9 h-9'
-        } rounded-full bg-black/30 hover:bg-black/55 backdrop-blur-md border border-white/20 flex items-center justify-center text-white transition shadow-md cursor-pointer z-10`}
-        aria-label="Favorite restaurant"
-      >
-        <span
-          className={`text-sm leading-none transition-transform ${
-            isFavorite ? 'text-red-500 scale-110' : 'text-white'
-          }`}
-        >
-          {isFavorite ? '♥' : '♡'}
-        </span>
-      </button>
 
       {/* Hover Navigation Arrows */}
       {validImages.length > 1 && (
