@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { FavouritesProvider } from '@/context/FavouritesContext';
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased bg-gray-50">
         <AuthProvider>
           <FavouritesProvider>
-            <Navbar />
+            <Suspense fallback={null}>
+              <Navbar />
+            </Suspense>
             {children}
             <AuthModals />
             <Footer />
@@ -26,5 +29,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
-
