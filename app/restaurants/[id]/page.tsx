@@ -9,7 +9,8 @@ import ReserveTableModal from '@/components/ReserveTableModal';
 import FavouriteButton from '@/components/FavouriteButton';
 import { useFavourites } from '@/context/FavouritesContext';
 
-const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'http://localhost/hungrymenia-api/public/uploads/';
+const IMAGE_BASE_URL =
+  process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'http://localhost/hungrymenia-api/public/uploads/';
 
 const DAYS_OF_WEEK = [
   { key: 'sunday', label: 'Sunday' },
@@ -21,9 +22,22 @@ const DAYS_OF_WEEK = [
   { key: 'saturday', label: 'Saturday' },
 ];
 
+interface WeeklyDayItem {
+  key: string;
+  label: string;
+  isToday: boolean;
+  closed: boolean;
+  labelText: string;
+}
 
+interface ScheduleSummary {
+  isOpen: boolean;
+  todayText: string;
+  weeklyList: WeeklyDayItem[];
+  hasCustomWeekly: boolean;
+}
 
-function parseTimeToMinutes(timeStr) {
+function parseTimeToMinutes(timeStr: any): number | null {
   if (!timeStr) return null;
   const clean = String(timeStr).trim().toUpperCase();
 
@@ -49,9 +63,9 @@ function parseTimeToMinutes(timeStr) {
   return null;
 }
 
-function formatDisplayTime(timeStr) {
+function formatDisplayTime(timeStr: any): string {
   const mins = parseTimeToMinutes(timeStr);
-  if (mins === null) return timeStr || '';
+  if (mins === null) return timeStr ? String(timeStr) : '';
   const h24 = Math.floor(mins / 60) % 24;
   const m = mins % 60;
   const period = h24 >= 12 ? 'PM' : 'AM';
@@ -59,34 +73,38 @@ function formatDisplayTime(timeStr) {
   return `${h12}:${String(m).padStart(2, '0')} ${period}`;
 }
 
-function parseOpeningHours(openingHours) {
+function parseOpeningHours(openingHours: any): Record<string, any> | null {
   if (!openingHours) return null;
   if (typeof openingHours === 'string') {
     try {
       return JSON.parse(openingHours);
-    } catch (_) {
+    } catch {
       return null;
     }
   }
   return typeof openingHours === 'object' ? openingHours : null;
 }
 
-function getScheduleSummary(branch, now = new Date()) {
+function getScheduleSummary(branch: any, now = new Date()): ScheduleSummary {
   const parsedHours = parseOpeningHours(branch.opening_hours);
   const currentMins = now.getHours() * 60 + now.getMinutes();
   const todayIndex = now.getDay();
   const todayKey = DAYS_OF_WEEK[todayIndex].key;
 
-  const weeklyList = DAYS_OF_WEEK.map((day, idx) => {
+  const weeklyList: WeeklyDayItem[] = DAYS_OF_WEEK.map((day, idx) => {
     const entry = parsedHours?.[day.key];
     if (entry) {
       if (entry.closed) {
         return { ...day, isToday: idx === todayIndex, closed: true, labelText: 'Closed' };
       }
-      const slots = Array.isArray(entry.slots) ? entry.slots.filter((s) => s?.open && s?.close) : [];
+      const slots = Array.isArray(entry.slots)
+        ? entry.slots.filter((s: any) => s?.open && s?.close)
+        : [];
       const text =
         slots.length > 0
-          ? slots.map((s) => `${formatDisplayTime(s.open)} – ${formatDisplayTime(s.close)}`).join(', ')
+          ? slots
+              .map((s: any) => `${formatDisplayTime(s.open)} – ${formatDisplayTime(s.close)}`)
+              .join(', ')
           : `${formatDisplayTime(branch.open_time)} – ${formatDisplayTime(branch.close_time)}`;
       return { ...day, isToday: idx === todayIndex, closed: false, labelText: text };
     }
@@ -107,13 +125,15 @@ function getScheduleSummary(branch, now = new Date()) {
       return { isOpen: false, todayText: 'Closed today', weeklyList, hasCustomWeekly: true };
     }
 
-    const slots = Array.isArray(todayEntry.slots) ? todayEntry.slots.filter((s) => s?.open && s?.close) : [];
+    const slots = Array.isArray(todayEntry.slots)
+      ? todayEntry.slots.filter((s: any) => s?.open && s?.close)
+      : [];
     if (slots.length > 0) {
       const todayText = slots
-        .map((s) => `${formatDisplayTime(s.open)} – ${formatDisplayTime(s.close)}`)
+        .map((s: any) => `${formatDisplayTime(s.open)} – ${formatDisplayTime(s.close)}`)
         .join(', ');
 
-      const isWithinAnySlot = slots.some((slot) => {
+      const isWithinAnySlot = slots.some((slot: any) => {
         const openMins = parseTimeToMinutes(slot.open);
         const closeMins = parseTimeToMinutes(slot.close);
         if (openMins === null || closeMins === null) return false;
@@ -144,24 +164,24 @@ function getScheduleSummary(branch, now = new Date()) {
 
 function BranchContent() {
   const params = useParams();
-  const branchId = params?.id;
+  const branchId = params?.id as string | undefined;
   const { isFavourite, toggleFavourite } = useFavourites();
 
-  const [branch, setBranch] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [branch, setBranch] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [isReserveOpen, setIsReserveOpen] = useState(false);
-  const [reservationBanner, setReservationBanner] = useState(null);
-  const [showHoursDrawer, setShowHoursDrawer] = useState(false);
+  const [isReserveOpen, setIsReserveOpen] = useState<boolean>(false);
+  const [reservationBanner, setReservationBanner] = useState<string | null>(null);
+  const [showHoursDrawer, setShowHoursDrawer] = useState<boolean>(false);
 
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedFoodType, setSelectedFoodType] = useState('all');
-  const [selectedMealTime, setSelectedMealTime] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedFoodType, setSelectedFoodType] = useState<string>('all');
+  const [selectedMealTime, setSelectedMealTime] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [bannerIndex, setBannerIndex] = useState(0);
-  const [scheduleInfo, setScheduleInfo] = useState(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [bannerIndex, setBannerIndex] = useState<number>(0);
+  const [scheduleInfo, setScheduleInfo] = useState<ScheduleSummary | null>(null);
   const itemsPerPage = 9;
 
   useEffect(() => {
@@ -186,8 +206,10 @@ function BranchContent() {
     return () => clearInterval(interval);
   }, [refreshSchedule]);
 
-  const branchPhotos = branch
-    ? [branch.image_1, branch.image_2, branch.image_3, branch.image_4, branch.image_5].filter(Boolean)
+  const branchPhotos: string[] = branch
+    ? [branch.image_1, branch.image_2, branch.image_3, branch.image_4, branch.image_5].filter(
+        Boolean
+      )
     : [];
 
   useEffect(() => {
@@ -207,7 +229,7 @@ function BranchContent() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex items-center gap-2.5 text-gray-500 font-semibold text-sm">
           <span className="w-2.5 h-2.5 rounded-full bg-[#1B873D] animate-ping" />
-          <span>Loading branch &amp; menu...</span>
+          <span>Loading restaurant &amp; menu...</span>
         </div>
       </div>
     );
@@ -217,15 +239,15 @@ function BranchContent() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-center px-4">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-md shadow-xs">
-          <h2 className="text-xl font-extrabold text-gray-900 mb-2">Branch Not Found</h2>
+          <h2 className="text-xl font-extrabold text-gray-900 mb-2">Restaurant Not Found</h2>
           <p className="text-gray-500 text-xs mb-6">
-            The restaurant branch you are looking for does not exist or is currently inactive.
+            The restaurant you are looking for does not exist or is currently inactive.
           </p>
           <Link
-            href="/"
+            href="/restaurants"
             className="inline-flex items-center justify-center bg-[#1B873D] hover:bg-[#146C30] text-white px-5 py-2.5 rounded-xl font-bold text-xs transition"
           >
-            &larr; Back to Home
+            &larr; Back to Restaurants
           </Link>
         </div>
       </div>
@@ -238,18 +260,24 @@ function BranchContent() {
     branch.restaurant?.name &&
     branch.restaurant.name.trim().toLowerCase() !== branch.name.trim().toLowerCase();
 
-  const supportsBooking = branch.supports_booking !== undefined ? Boolean(branch.supports_booking) : true;
-  const supportsPickup = branch.supports_pickup !== undefined ? Boolean(branch.supports_pickup) : true;
+  const supportsBooking =
+    branch.supports_booking !== undefined ? Boolean(branch.supports_booking) : true;
+  const supportsPickup =
+    branch.supports_pickup !== undefined ? Boolean(branch.supports_pickup) : true;
   const hasReviewsCount =
     branch.reviews_count !== undefined &&
     branch.reviews_count !== null &&
     Number(branch.reviews_count) > 0;
 
-  const menuItems = branch.menu_items || [];
-  const categories = [...new Set(menuItems.map((item) => item.menu_category?.name).filter(Boolean))];
-  const foodTypes = [...new Set(menuItems.map((item) => item.food_type?.name).filter(Boolean))];
+  const menuItems: any[] = branch.menu_items || [];
+  const categories: string[] = [
+    ...new Set(menuItems.map((item: any) => item.menu_category?.name).filter(Boolean)),
+  ];
+  const foodTypes: string[] = [
+    ...new Set(menuItems.map((item: any) => item.food_type?.name).filter(Boolean)),
+  ];
 
-  const filteredItems = menuItems.map((item) => {
+  const filteredItems = menuItems.map((item: any) => {
     const catName = item.menu_category?.name;
     const foodTypeName = item.food_type?.name;
 
@@ -265,10 +293,13 @@ function BranchContent() {
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return { ...item, isVisible: matchesCategory && matchesFoodType && matchesMeal && matchesSearch };
+    return {
+      ...item,
+      isVisible: matchesCategory && matchesFoodType && matchesMeal && matchesSearch,
+    };
   });
 
-  const activeFilteredItems = filteredItems.filter((item) => item.isVisible);
+  const activeFilteredItems = filteredItems.filter((item: any) => item.isVisible);
   const totalPages = Math.ceil(activeFilteredItems.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedItems = activeFilteredItems.slice(startIndex, startIndex + itemsPerPage);
@@ -279,11 +310,11 @@ function BranchContent() {
     selectedMealTime !== 'all' ||
     searchQuery.trim() !== '';
 
-  const getImageUrl = (path) => (path.startsWith('http') ? path : `${IMAGE_BASE_URL}${path}`);
+  const getImageUrl = (path: string) =>
+    path.startsWith('http') ? path : `${IMAGE_BASE_URL}${path}`;
 
   return (
     <main className="min-h-screen bg-slate-50 text-gray-900 pb-20">
-      {/* Hero Banner */}
       <div className="relative h-72 sm:h-80 md:h-[22rem] w-full overflow-hidden bg-neutral-900">
         {branchPhotos.length > 0 ? (
           branchPhotos.map((photo, idx) => (
@@ -306,11 +337,10 @@ function BranchContent() {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/25" />
 
-        {/* Top Navigation & Controls */}
         <div className="absolute top-4 inset-x-0 px-4 sm:px-6 z-10">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <Link
-              href="/"
+              href="/restaurants"
               className="inline-flex items-center gap-1.5 bg-black/45 hover:bg-black/65 text-white text-xs font-bold px-3.5 py-2 rounded-full backdrop-blur-md border border-white/15 transition"
             >
               <span>&larr;</span>
@@ -336,13 +366,12 @@ function BranchContent() {
 
               <FavouriteButton
                 isFavourite={isFavourite(branch.id)}
-                onToggle={(e) => toggleFavourite(branch.id, e)}
+                onToggle={(e: any) => toggleFavourite(branch.id, e)}
               />
             </div>
           </div>
         </div>
 
-        {/* Hero Bottom Title Overlay */}
         <div className="absolute inset-x-0 bottom-0 pb-6 sm:pb-8 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto flex items-end gap-4 sm:gap-5">
             {branch.restaurant?.logo && (
@@ -385,12 +414,9 @@ function BranchContent() {
         </div>
       </div>
 
-      {/* Main Content Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-4 relative z-20 space-y-6">
-        {/* Branch Info & Action Strip */}
         <div className="bg-white border border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            {/* Left: Status, Today's Hours, Service Pills & Contact */}
             <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs">
               {scheduleInfo && (
                 <button
@@ -442,7 +468,6 @@ function BranchContent() {
               )}
             </div>
 
-            {/* Right: Primary CTA */}
             {supportsBooking && (
               <div className="flex items-center gap-2.5 shrink-0">
                 <button
@@ -457,7 +482,6 @@ function BranchContent() {
             )}
           </div>
 
-          {/* Collapsible Weekly Opening Hours */}
           {showHoursDrawer && scheduleInfo?.weeklyList && (
             <div className="pt-3.5 border-t border-slate-100">
               <div className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400 mb-2.5">
@@ -476,7 +500,9 @@ function BranchContent() {
                     <span className="truncate">
                       {day.label}
                       {day.isToday && (
-                        <span className="ml-1.5 text-[10px] font-extrabold text-[#1B873D]">(Today)</span>
+                        <span className="ml-1.5 text-[10px] font-extrabold text-[#1B873D]">
+                          (Today)
+                        </span>
                       )}
                     </span>
                     <span
@@ -493,7 +519,6 @@ function BranchContent() {
           )}
         </div>
 
-        {/* Reservation Confirmation Alert */}
         {reservationBanner && (
           <div className="bg-green-50 border border-green-200 text-green-800 px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center justify-between gap-4 shadow-xs">
             <span>✅ {reservationBanner}</span>
@@ -507,7 +532,6 @@ function BranchContent() {
           </div>
         )}
 
-        {/* Menu Search & Filters */}
         <MenuSearchFilters
           selectedMealTime={selectedMealTime}
           setSelectedMealTime={setSelectedMealTime}
@@ -521,12 +545,14 @@ function BranchContent() {
           foodTypes={foodTypes}
         />
 
-        {/* Menu Grid Section */}
         <section className="space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">
-                Menu <span className="text-gray-400 font-bold text-base">({activeFilteredItems.length})</span>
+                Menu{' '}
+                <span className="text-gray-400 font-bold text-base">
+                  ({activeFilteredItems.length})
+                </span>
               </h2>
             </div>
 
@@ -571,8 +597,12 @@ function BranchContent() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-                {paginatedItems.map((item) => (
-                  <MealCard key={item.id} item={item} branchDiscounts={branch.discounts || []} />
+                {paginatedItems.map((item: any) => (
+                  <MealCard
+                    key={item.id}
+                    item={item}
+                    branchDiscounts={branch.discounts || []}
+                  />
                 ))}
               </div>
 
@@ -611,7 +641,7 @@ function BranchContent() {
           branch={branch}
           isOpen={isReserveOpen}
           onClose={() => setIsReserveOpen(false)}
-          onSuccess={(created) =>
+          onSuccess={(created: any) =>
             setReservationBanner(
               `Reservation ${created.reservation_code} submitted and is pending branch approval.`
             )
@@ -627,7 +657,9 @@ export default function Page() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-          <div className="animate-pulse text-gray-400 font-medium text-sm">Loading branch &amp; menu...</div>
+          <div className="animate-pulse text-gray-400 font-medium text-sm">
+            Loading restaurant &amp; menu...
+          </div>
         </div>
       }
     >

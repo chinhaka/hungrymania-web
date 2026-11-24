@@ -124,7 +124,7 @@ function CategoryShelf({
 }
 
 export default function Home() {
-  const { favourites } = useFavourites();
+  const { favouriteIds } = useFavourites();
 
   const [now, setNow] = useState<Date | null>(null);
   const [branches, setBranches] = useState<any[]>([]);
@@ -254,12 +254,10 @@ export default function Home() {
   }, [filteredBranches, userCoords, selectedCity]);
 
   const placesYouMayLike = useMemo(() => {
-    const favIds = new Set(
-      (favourites || []).map((f: any) => String(f?.id ?? f?.restaurant_branch_id ?? f))
-    );
+    const favIdSet = new Set((favouriteIds || []).map((id: any) => String(id)));
     const favCityIds = new Set(
       filteredBranches
-        .filter((b) => favIds.has(String(b.id)))
+        .filter((b) => favIdSet.has(String(b.id)))
         .map((b) => String(b.city_id))
     );
 
@@ -274,7 +272,7 @@ export default function Home() {
         Number(b.rating || 0) * 0.1;
       return bScore - aScore;
     });
-  }, [filteredBranches, favourites]);
+  }, [filteredBranches, favouriteIds]);
 
   const hasActiveFilters =
     Boolean(search.trim()) ||
@@ -295,7 +293,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-gray-800 pb-16">
-      {/* Hero Section */}
       <div className="bg-gradient-to-br from-[#146C30] via-[#1B873D] to-[#0f5424] text-white py-14 px-4 sm:px-6 text-center relative overflow-visible">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
 
@@ -310,7 +307,6 @@ export default function Home() {
             Search top-rated dining spots, browse live menus, and book your next experience.
           </p>
 
-          {/* Search Bar & City Filter */}
           <div className="bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl flex flex-col md:flex-row items-center gap-2 max-w-3xl mx-auto">
             <CitySelect selectedCity={selectedCity} setSelectedCity={setSelectedCity} />
 
@@ -339,7 +335,6 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Quick Location Chips */}
           <div className="mt-5 flex flex-wrap justify-center items-center gap-2">
             <span className="text-xs text-green-200 font-medium">Quick Filter:</span>
             {quickCities.map((city) => (
@@ -360,7 +355,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Extra Filter & Sort Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-5 relative z-20">
         <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:px-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
@@ -445,7 +439,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 space-y-12">
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -471,7 +464,6 @@ export default function Home() {
           </div>
         ) : (
           <>
-            {/* 1. Featured Paid Ads First */}
             {paidAdBranches.length > 0 && (
               <section className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
@@ -509,7 +501,6 @@ export default function Home() {
               </section>
             )}
 
-            {/* 2. Categorized Shelves */}
             <CategoryShelf
               title="Most Rated"
               subtitle="Top-rated spots loved by diners"
