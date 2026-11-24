@@ -165,7 +165,12 @@ function getScheduleSummary(branch: any, now = new Date()): ScheduleSummary {
 function BranchContent() {
   const params = useParams();
   const branchId = params?.id as string | undefined;
-  const { isFavourite, toggleFavourite } = useFavourites();
+  const { isFavourite: rawIsFavourite, toggleFavourite: rawToggleFavourite } = useFavourites();
+  const isFavourite = rawIsFavourite as (id: number | string) => boolean;
+  const toggleFavourite = rawToggleFavourite as (
+    id: number | string,
+    e?: React.MouseEvent
+  ) => Promise<void> | void;
 
   const [branch, setBranch] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -270,12 +275,12 @@ function BranchContent() {
     Number(branch.reviews_count) > 0;
 
   const menuItems: any[] = branch.menu_items || [];
-  const categories: string[] = [
-    ...new Set(menuItems.map((item: any) => item.menu_category?.name).filter(Boolean)),
-  ];
-  const foodTypes: string[] = [
-    ...new Set(menuItems.map((item: any) => item.food_type?.name).filter(Boolean)),
-  ];
+  const categories: string[] = Array.from(
+    new Set(menuItems.map((item: any) => item.menu_category?.name).filter(Boolean))
+  ) as string[];
+  const foodTypes: string[] = Array.from(
+    new Set(menuItems.map((item: any) => item.food_type?.name).filter(Boolean))
+  ) as string[];
 
   const filteredItems = menuItems.map((item: any) => {
     const catName = item.menu_category?.name;
@@ -366,7 +371,7 @@ function BranchContent() {
 
               <FavouriteButton
                 isFavourite={isFavourite(branch.id)}
-                onToggle={(e: any) => toggleFavourite(branch.id, e)}
+                onToggle={(e: React.MouseEvent) => toggleFavourite(branch.id, e)}
               />
             </div>
           </div>
@@ -533,16 +538,16 @@ function BranchContent() {
         )}
 
         <MenuSearchFilters
-          selectedMealTime={selectedMealTime}
-          setSelectedMealTime={setSelectedMealTime}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          categories={categories}
-          selectedFoodType={selectedFoodType}
-          setSelectedFoodType={setSelectedFoodType}
-          foodTypes={foodTypes}
+            selectedMealTime={selectedMealTime}
+            setSelectedMealTime={setSelectedMealTime}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            categories={categories as never}
+            selectedFoodType={selectedFoodType}
+            setSelectedFoodType={setSelectedFoodType}
+            foodTypes={foodTypes as never}
         />
 
         <section className="space-y-5">

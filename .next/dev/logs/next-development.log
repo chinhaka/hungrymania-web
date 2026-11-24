@@ -158,3 +158,4 @@
 {"timestamp":"04:07:42.479","source":"Server","level":"ERROR","message":"[browser] \"Failed to fetch districts and cities\" \"\\u001b[31mTypeError: Failed to fetch\\u001b[39m\\n\\u001b[31mTypeError: Failed to fetch\\u001b[39m\" \"\\u001b[2m(services/api.js:40:13)\\u001b[22m\""}
 {"timestamp":"04:09:05.930","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
 {"timestamp":"04:34:23.025","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"05:05:29.097","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
