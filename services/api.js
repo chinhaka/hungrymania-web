@@ -1,25 +1,40 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function fetchBranches(searchQuery = '', cityId = '', page = 1) {
+export async function fetchBranches(
+  searchQuery = '',
+  cityId = '',
+  page = 1,
+  options = {}
+) {
   try {
-    const res = await fetch(`${API_URL}/branches?search=${searchQuery}&city_id=${cityId}&page=${page}`, {
-      cache: 'no-store'
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('search', searchQuery);
+    if (cityId) params.append('city_id', cityId);
+    if (page) params.append('page', String(page));
+    if (options.section) params.append('section', options.section);
+    if (options.supportsBooking) params.append('supports_booking', '1');
+    if (options.supportsPickup) params.append('supports_pickup', '1');
+    if (options.sort && options.sort !== 'recommended') params.append('sort', options.sort);
+
+    const res = await fetch(`${API_URL}/branches?${params.toString()}`, {
+      cache: 'no-store',
     });
     const data = await res.json();
-    // Return the whole paginated object so we can read last_page and current_page
-    return data.branches || { data: [], current_page: 1, last_page: 1 };
+
+    return {
+      ...(data.branches || { data: [], current_page: 1, last_page: 1 }),
+      featured_ads: data.featured_ads || [],
+    };
   } catch (err) {
-    console.error('Failed to fetch branches', err);
-    return { data: [], current_page: 1, last_page: 1 };
+    console.error('Failed to fetch restaurants', err);
+    return { data: [], current_page: 1, last_page: 1, featured_ads: [] };
   }
 }
 
-// Fixed to return data.districts matching your API response
 export async function fetchDistrictsAndCities() {
   try {
     const res = await fetch(`${API_URL}/cities`, { cache: 'no-store' });
     const data = await res.json();
-    console.log('Fetched districts and cities:', data.districts); // Debugging log
     return data.districts || [];
   } catch (err) {
     console.error('Failed to fetch districts and cities', err);
@@ -40,7 +55,6 @@ export async function registerRestaurant(formData) {
     return { status: false, message: 'Network or server error' };
   }
 }
-
 
 export async function registerUser(formData) {
   try {
@@ -84,12 +98,12 @@ export async function googleAuthApi(googleData) {
 export async function fetchBranchDetails(branchId) {
   try {
     const res = await fetch(`${API_URL}/branches/${branchId}`, {
-      cache: 'no-store'
+      cache: 'no-store',
     });
     const data = await res.json();
     return data.branch || null;
   } catch (err) {
-    console.error('Failed to fetch branch details', err);
+    console.error('Failed to fetch restaurant details', err);
     return null;
   }
 }

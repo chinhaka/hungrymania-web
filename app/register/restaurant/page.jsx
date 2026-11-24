@@ -5,6 +5,191 @@ import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/hungrymenia-api/public/api';
 
+const DAYS_OF_WEEK = [
+  { key: 'sunday', label: 'Sunday' },
+  { key: 'monday', label: 'Monday' },
+  { key: 'tuesday', label: 'Tuesday' },
+  { key: 'wednesday', label: 'Wednesday' },
+  { key: 'thursday', label: 'Thursday' },
+  { key: 'friday', label: 'Friday' },
+  { key: 'saturday', label: 'Saturday' },
+];
+
+
+
+function createDefaultSchedule() {
+  const schedule = {};
+  DAYS_OF_WEEK.forEach((d) => {
+    schedule[d.key] = {
+      closed: false,
+      slots: [{ open: '08:00', close: '22:00' }],
+    };
+  });
+  return schedule;
+}
+
+function WeeklyHoursEditor({ schedule, onChange }) {
+  const safeSchedule = schedule || createDefaultSchedule();
+
+  const toggleClosed = (dayKey, checked) => {
+    const base = schedule || createDefaultSchedule();
+    const current = base[dayKey] || { closed: false, slots: [{ open: '08:00', close: '22:00' }] };
+    onChange({
+      ...base,
+      [dayKey]: {
+        ...current,
+        closed: checked,
+        slots: current.slots && current.slots.length > 0 ? current.slots : [{ open: '08:00', close: '22:00' }],
+      },
+    });
+  };
+
+  const addSlot = (dayKey) => {
+    const base = schedule || createDefaultSchedule();
+    const current = base[dayKey] || { closed: false, slots: [{ open: '08:00', close: '22:00' }] };
+    const existingSlots = current.slots && current.slots.length > 0 ? current.slots : [{ open: '08:00', close: '22:00' }];
+    const lastSlot = existingSlots[existingSlots.length - 1];
+
+    onChange({
+      ...base,
+      [dayKey]: {
+        ...current,
+        closed: false,
+        slots: [
+          ...existingSlots,
+          { open: lastSlot?.open || '09:00', close: lastSlot?.close || '17:00' },
+        ],
+      },
+    });
+  };
+
+  const removeSlot = (dayKey, slotIndex) => {
+    const base = schedule || createDefaultSchedule();
+    const current = base[dayKey];
+    if (!current || !current.slots || current.slots.length <= 1) return;
+
+    onChange({
+      ...base,
+      [dayKey]: {
+        ...current,
+        slots: current.slots.filter((_, idx) => idx !== slotIndex),
+      },
+    });
+  };
+
+  const updateSlotTime = (dayKey, slotIndex, field, val) => {
+    const base = schedule || createDefaultSchedule();
+    const current = base[dayKey] || { closed: false, slots: [{ open: '08:00', close: '22:00' }] };
+    const existingSlots = current.slots && current.slots.length > 0 ? current.slots : [{ open: '08:00', close: '22:00' }];
+
+    const nextSlots = existingSlots.map((slot, idx) =>
+      idx === slotIndex ? { ...slot, [field]: val } : slot
+    );
+
+    onChange({
+      ...base,
+      [dayKey]: {
+        ...current,
+        slots: nextSlots,
+      },
+    });
+  };
+
+  return (
+    <div className="bg-white border border-gray-300 rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xs">
+      <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+        <div>
+          <h4 className="text-xs font-extrabold text-gray-900">Opening &amp; Closing Hours</h4>
+          <p className="text-[11px] text-gray-500">Mark a day as Closed or use + to add split shifts</p>
+        </div>
+      </div>
+
+      <div className="divide-y divide-gray-100">
+        {DAYS_OF_WEEK.map((day) => {
+          const dayData = safeSchedule[day.key] || {
+            closed: false,
+            slots: [{ open: '08:00', close: '22:00' }],
+          };
+          const slots = dayData.slots && dayData.slots.length > 0 ? dayData.slots : [{ open: '08:00', close: '22:00' }];
+
+          return (
+            <div key={day.key} className="py-3.5 first:pt-1 last:pb-1 flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div className="w-36 shrink-0 space-y-1.5">
+                <div className="text-xs font-extrabold text-gray-900">{day.label}</div>
+                <label className="inline-flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(dayData.closed)}
+                    onChange={(e) => toggleClosed(day.key, e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#1B873D] focus:ring-[#1B873D]"
+                  />
+                  <span>Closed</span>
+                </label>
+              </div>
+
+              <div className="flex-1 space-y-2.5">
+                {slots.map((slot, slotIdx) => (
+                  <div key={slotIdx} className="flex items-center gap-2 sm:gap-2.5">
+                    <div className="relative flex-1">
+                      <span className="-top-2 left-2.5 bg-white px-1 text-[10px] font-semibold text-gray-500 absolute">
+                        Opens at
+                      </span>
+                      <input
+                        type="time"
+                        disabled={Boolean(dayData.closed)}
+                        required={!dayData.closed}
+                        value={slot.open || '08:00'}
+                        onChange={(e) => updateSlotTime(day.key, slotIdx, 'open', e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-medium text-gray-900 bg-white border border-gray-300 rounded-xl disabled:bg-gray-100 disabled:text-gray-400 focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="relative flex-1">
+                      <span className="-top-2 left-2.5 bg-white px-1 text-[10px] font-semibold text-gray-500 absolute">
+                        Closes at
+                      </span>
+                      <input
+                        type="time"
+                        disabled={Boolean(dayData.closed)}
+                        required={!dayData.closed}
+                        value={slot.close || '22:00'}
+                        onChange={(e) => updateSlotTime(day.key, slotIdx, 'close', e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-medium text-gray-900 bg-white border border-gray-300 rounded-xl disabled:bg-gray-100 disabled:text-gray-400 focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none"
+                      />
+                    </div>
+
+                    {slotIdx === 0 && (
+                      <button
+                        type="button"
+                        disabled={Boolean(dayData.closed)}
+                        onClick={() => addSlot(day.key)}
+                        title="Add another time slot"
+                        className="w-8 h-8 rounded-xl border border-gray-200 hover:bg-green-50 hover:text-[#1B873D] disabled:opacity-35 text-gray-700 font-bold text-base flex items-center justify-center shrink-0 transition cursor-pointer"
+                      >
+                        +
+                      </button>
+                    )}
+
+                    {slotIdx > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => removeSlot(day.key, slotIdx)}
+                        title="Remove time slot"
+                        className="w-8 h-8 rounded-xl border border-red-100 bg-red-50/60 hover:bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center shrink-0 transition cursor-pointer"
+                      >
+                        🗑
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 // --- Searchable City Dropdown Component ---
 function SearchableCitySelect({ districts, value, onChange }) {
@@ -248,6 +433,7 @@ export default function RestaurantRegistrationPage() {
         email: '',
         open_time: '08:00',
         close_time: '22:00',
+        opening_hours: createDefaultSchedule(),
         admin_name: '',
         admin_email: '',
         admin_password: '',
@@ -280,9 +466,9 @@ export default function RestaurantRegistrationPage() {
       const updated = { ...prev, [name]: value };
       // If single restaurant, automatically keep branch name synchronized with restaurant name
       if (name === 'restaurant_name' && prev.registration_type === 'single') {
-        updated.branches = [
-          { ...prev.branches[0], name: value }
-        ];
+        updated.branches = prev.branches.map((b, idx) =>
+          idx === 0 ? { ...b, name: value } : b
+        );
       }
       return updated;
     });
@@ -292,27 +478,44 @@ export default function RestaurantRegistrationPage() {
     setFormData((prev) => ({
       ...prev,
       registration_type: type,
-      branches: type === 'single' 
-        ? [{ ...prev.branches[0], name: prev.restaurant_name }] 
-        : prev.branches
+      branches:
+        type === 'single'
+          ? [
+              {
+                ...prev.branches[0],
+                name: prev.restaurant_name,
+                opening_hours: prev.branches[0]?.opening_hours || createDefaultSchedule(),
+              },
+            ]
+          : prev.branches.map((b) => ({
+              ...b,
+              opening_hours: b.opening_hours || createDefaultSchedule(),
+            })),
     }));
   };
 
   const handleBranchChange = (index, field, value) => {
-    const updatedBranches = [...formData.branches];
-    updatedBranches[index][field] = value;
-    setFormData((prev) => ({ ...prev, branches: updatedBranches }));
+    setFormData((prev) => ({
+      ...prev,
+      branches: prev.branches.map((branch, idx) =>
+        idx === index ? { ...branch, [field]: value } : branch
+      ),
+    }));
   };
 
   const handleBranchImagesUpdate = (index, updatedImages) => {
-    const updatedBranches = [...formData.branches];
-    updatedBranches[index].images = updatedImages;
-    setFormData((prev) => ({ ...prev, branches: updatedBranches }));
+    setFormData((prev) => ({
+      ...prev,
+      branches: prev.branches.map((branch, idx) =>
+        idx === index ? { ...branch, images: updatedImages } : branch
+      ),
+    }));
   };
 
   const addBranch = () => {
-    if (formData.branches.length < 3) {
-      setFormData((prev) => ({
+    setFormData((prev) => {
+      if (prev.branches.length >= 3) return prev;
+      return {
         ...prev,
         branches: [
           ...prev.branches,
@@ -324,22 +527,28 @@ export default function RestaurantRegistrationPage() {
             email: '',
             open_time: '08:00',
             close_time: '22:00',
+            opening_hours: createDefaultSchedule(),
             admin_name: '',
             admin_email: '',
             admin_password: '',
             admin_password_confirmation: '',
-            images: []
+            images: [],
+            supports_pickup: true,
+            supports_booking: true,
           }
         ]
-      }));
-    }
+      };
+    });
   };
 
   const removeBranch = (index) => {
-    if (formData.branches.length > 1) {
-      const updatedBranches = formData.branches.filter((_, i) => i !== index);
-      setFormData((prev) => ({ ...prev, branches: updatedBranches }));
-    }
+    setFormData((prev) => {
+      if (prev.branches.length <= 1) return prev;
+      return {
+        ...prev,
+        branches: prev.branches.filter((_, idx) => idx !== index)
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -392,17 +601,27 @@ export default function RestaurantRegistrationPage() {
       formData.branches.forEach((branch, index) => {
         // For single restaurants, force branch name to match restaurant name if empty/hidden
         const finalBranchName = formData.registration_type === 'single' ? formData.restaurant_name : branch.name;
+        const hoursObj = branch.opening_hours || createDefaultSchedule();
+        const firstOpenDay = DAYS_OF_WEEK
+          .map((d) => hoursObj[d.key])
+          .find((day) => day && !day.closed && day.slots && day.slots.length > 0);
+        const fallbackOpen = firstOpenDay?.slots[0]?.open || branch.open_time || '08:00';
+        const fallbackClose = firstOpenDay?.slots[0]?.close || branch.close_time || '22:00';
+
         dataPayload.append(`branches[${index}][name]`, finalBranchName);
         dataPayload.append(`branches[${index}][city_id]`, branch.city_id);
         dataPayload.append(`branches[${index}][address]`, branch.address);
         dataPayload.append(`branches[${index}][phone]`, branch.phone);
         dataPayload.append(`branches[${index}][email]`, branch.email);
-        dataPayload.append(`branches[${index}][open_time]`, branch.open_time);
-        dataPayload.append(`branches[${index}][close_time]`, branch.close_time);
+        dataPayload.append(`branches[${index}][open_time]`, fallbackOpen);
+        dataPayload.append(`branches[${index}][close_time]`, fallbackClose);
+        dataPayload.append(`branches[${index}][opening_hours]`, JSON.stringify(hoursObj));
         dataPayload.append(`branches[${index}][admin_name]`, branch.admin_name);
         dataPayload.append(`branches[${index}][admin_email]`, branch.admin_email);
         dataPayload.append(`branches[${index}][admin_password]`, branch.admin_password);
         dataPayload.append(`branches[${index}][admin_password_confirmation]`, branch.admin_password_confirmation);
+        dataPayload.append(`branches[${index}][supports_booking]`, branch.supports_booking !== false ? '1' : '0');
+        dataPayload.append(`branches[${index}][supports_pickup]`, branch.supports_pickup !== false ? '1' : '0');
 
         branch.images.forEach((imgFile) => {
           dataPayload.append(`branches[${index}][images][]`, imgFile);
@@ -711,25 +930,41 @@ export default function RestaurantRegistrationPage() {
                         className="w-full px-4 py-2.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-xl shadow-xs focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none placeholder:text-gray-400"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-extrabold text-gray-800 mb-1">Opening Time</label>
-                      <input
-                        type="time"
-                        required
-                        value={branch.open_time}
-                        onChange={(e) => handleBranchChange(index, 'open_time', e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-xl shadow-xs focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none"
+
+                    <div className="md:col-span-2">
+                      <WeeklyHoursEditor
+                        schedule={branch.opening_hours}
+                        onChange={(updatedSchedule) => handleBranchChange(index, 'opening_hours', updatedSchedule)}
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-extrabold text-gray-800 mb-1">Closing Time</label>
-                      <input
-                        type="time"
-                        required
-                        value={branch.close_time}
-                        onChange={(e) => handleBranchChange(index, 'close_time', e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs text-gray-900 bg-white border border-gray-300 rounded-xl shadow-xs focus:ring-2 focus:ring-[#1B873D] focus:border-[#1B873D] focus:outline-none"
-                      />
+
+                    <div className="md:col-span-2 bg-white border border-gray-300 rounded-2xl p-4 shadow-2xs space-y-2.5">
+                      <div>
+                        <h4 className="text-xs font-extrabold text-gray-900">Branch Service Options</h4>
+                        <p className="text-[11px] text-gray-500">Select which services customers can use at this branch</p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-6 pt-1">
+                        <label className="inline-flex items-center gap-2 text-xs font-semibold text-gray-800 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(branch.supports_booking)}
+                            onChange={(e) => handleBranchChange(index, 'supports_booking', e.target.checked)}
+                            className="w-4 h-4 rounded border-gray-300 text-[#1B873D] focus:ring-[#1B873D]"
+                          />
+                          <span>🪑 Table Booking Available</span>
+                        </label>
+
+                        <label className="inline-flex items-center gap-2 text-xs font-semibold text-gray-800 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(branch.supports_pickup)}
+                            onChange={(e) => handleBranchChange(index, 'supports_pickup', e.target.checked)}
+                            className="w-4 h-4 rounded border-gray-300 text-[#1B873D] focus:ring-[#1B873D]"
+                          />
+                          <span>🛍️ Pickup Available</span>
+                        </label>
+                      </div>
                     </div>
 
                     <div className="md:col-span-2 pt-2">

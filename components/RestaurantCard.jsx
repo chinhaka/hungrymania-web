@@ -1,10 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import BranchImageSlider from './BranchImageSlider';
 import FavouriteButton from './FavouriteButton';
 import { useFavourites } from '@/context/FavouritesContext';
 import { getBranchPromoSummary } from '@/utils/discountHelper';
+
+const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 function parseTimeToMinutes(timeStr) {
   if (!timeStr) return null;
@@ -42,56 +44,111 @@ function formatDisplayTime(timeStr) {
   return `${h12}:${String(m).padStart(2, '0')} ${period}`;
 }
 
+function parseOpeningHours(openingHours) {
+  if (!openingHours) return null;
+  if (typeof openingHours === 'string') {
+    try {
+      return JSON.parse(openingHours);
+    } catch (_) {
+      return null;
+    }
+  }
+  return typeof openingHours === 'object' ? openingHours : null;
+}
+
+function getTodayScheduleInfo(branch, now = new Date()) {
+  const parsedHours = parseOpeningHours(branch.opening_hours);
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+  const dayKey = DAY_KEYS[now.getDay()];
+
+  if (parsedHours && parsedHours[dayKey]) {
+    const dayEntry = parsedHours[dayKey];
+
+    if (dayEntry.closed) {
+      return {
+        isOpen: false,
+        hoursText: 'Closed today',
+      };
+    }
+
+    const slots = Array.isArray(dayEntry.slots) && dayEntry.slots.length > 0 ? dayEntry.slots : [];
+    if (slots.length > 0) {
+      const formattedSlots = slots
+        .filter((s) => s?.open && s?.close)
+        .map((s) => `${formatDisplayTime(s.open)} - ${formatDisplayTime(s.close)}`);
+
+      const isWithinAnySlot = slots.some((slot) => {
+        const openMins = parseTimeToMinutes(slot.open);
+        const closeMins = parseTimeToMinutes(slot.close);
+        if (openMins === null || closeMins === null) return false;
+        if (closeMins > openMins) {
+          return currentMins >= openMins && currentMins < closeMins;
+        }
+        if (closeMins < openMins) {
+          return currentMins >= openMins || currentMins < closeMins;
+        }
+        return true;
+      });
+
+      return {
+        isOpen: isWithinAnySlot,
+        hoursText: formattedSlots.join(', ') || 'Hours available',
+      };
+    }
+  }
+
+  const openMins = parseTimeToMinutes(branch.open_time);
+  const closeMins = parseTimeToMinutes(branch.close_time);
+  const formattedOpen = formatDisplayTime(branch.open_time);
+  const formattedClose = formatDisplayTime(branch.close_time);
+  const hoursText =
+    formattedOpen && formattedClose ? `${formattedOpen} - ${formattedClose}` : 'Hours available';
+
+  if (openMins === null || closeMins === null) {
+    return { isOpen: true, hoursText };
+  }
+
+  let openNow = false;
+  if (closeMins > openMins) {
+    openNow = currentMins >= openMins && currentMins < closeMins;
+  } else if (closeMins < openMins) {
+    openNow = currentMins >= openMins || currentMins < closeMins;
+  } else {
+    openNow = true;
+  }
+
+  return { isOpen: openNow, hoursText };
+}
+
 export default function RestaurantCard({ branch }) {
-  const [isOpen, setIsOpen] = useState(null);
+  const [statusInfo, setStatusInfo] = useState(null);
   const { isFavourite, toggleFavourite } = useFavourites();
 
   const restaurantName = branch.restaurant?.name?.trim() || branch.name?.trim() || 'Restaurant';
-  const branchLocation = (branch.city?.name || branch.name || '').trim();
+  const locationLabel = branch.city?.name || branch.address || '';
 
-  const hasDistinctBranchLocation =
-    branchLocation &&
-    branchLocation.toLowerCase() !== restaurantName.toLowerCase() &&
-    !restaurantName.toLowerCase().includes(branchLocation.toLowerCase());
-
-  const displayTitle = hasDistinctBranchLocation
-    ? `${restaurantName} - ${branchLocation}`
-    : restaurantName;
+  const evaluateStatus = useCallback(() => {
+    setStatusInfo(getTodayScheduleInfo(branch, new Date()));
+  }, [branch]);
 
   useEffect(() => {
-    function checkOpenStatus() {
-      const openMins = parseTimeToMinutes(branch.open_time);
-      const closeMins = parseTimeToMinutes(branch.close_time);
-
-      if (openMins === null || closeMins === null) {
-        setIsOpen(true);
-        return;
-      }
-
-      const now = new Date();
-      const currentMins = now.getHours() * 60 + now.getMinutes();
-
-      if (closeMins > openMins) {
-        setIsOpen(currentMins >= openMins && currentMins < closeMins);
-      } else if (closeMins < openMins) {
-        setIsOpen(currentMins >= openMins || currentMins < closeMins);
-      } else {
-        setIsOpen(true);
-      }
-    }
-
-    checkOpenStatus();
-    const interval = setInterval(checkOpenStatus, 60000);
+    evaluateStatus();
+    const interval = setInterval(evaluateStatus, 60000);
     return () => clearInterval(interval);
-  }, [branch.open_time, branch.close_time]);
+  }, [evaluateStatus]);
 
-  const formattedOpen = formatDisplayTime(branch.open_time);
-  const formattedClose = formatDisplayTime(branch.close_time);
   const promoLabel = getBranchPromoSummary(branch);
+  const supportsBooking = branch.supports_booking !== undefined ? Boolean(branch.supports_booking) : true;
+  const supportsPickup = branch.supports_pickup !== undefined ? Boolean(branch.supports_pickup) : true;
+
+  const hasReviewsCount =
+    branch.reviews_count !== undefined &&
+    branch.reviews_count !== null &&
+    Number(branch.reviews_count) > 0;
 
   return (
     <Link
-      href={`/branches/${branch.id}`}
+      href={`/restaurants/${branch.id}`}
       className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col group cursor-pointer"
     >
       {/* Compact Image Slider + Favourite Toggle */}
@@ -104,7 +161,7 @@ export default function RestaurantCard({ branch }) {
             branch.image_4,
             branch.image_5,
           ]}
-          branchName={displayTitle}
+          branchName={restaurantName}
         />
 
         <FavouriteButton
@@ -115,40 +172,55 @@ export default function RestaurantCard({ branch }) {
       </div>
 
       {/* Compact Card Details */}
-      <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
-        <div className="flex justify-between items-start gap-2">
-          <h3 className="text-sm font-extrabold text-gray-900 group-hover:text-[#1B873D] transition leading-snug line-clamp-1">
-            {displayTitle}
-          </h3>
-          <div className="flex items-center gap-0.5 shrink-0 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80">
-            <span className="text-amber-500 text-[11px]">★</span>
-            <span className="text-gray-900 text-[11px] font-bold">{branch.rating || '4.5'}</span>
-            <span className="text-gray-400 text-[10px]">({branch.reviews_count || '328'})</span>
+      <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2.5">
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="text-sm font-extrabold text-gray-900 group-hover:text-[#1B873D] transition leading-snug line-clamp-1">
+              {restaurantName}
+            </h3>
+            <div className="flex items-center gap-0.5 shrink-0 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80">
+              <span className="text-amber-500 text-[11px]">★</span>
+              <span className="text-gray-900 text-[11px] font-bold">{branch.rating || '4.5'}</span>
+              <span className="text-gray-400 text-[10px]">
+                {hasReviewsCount ? `(${branch.reviews_count})` : '(-)'}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="text-[11px] text-gray-500 flex items-center gap-1.5 truncate">
-          <span className="text-gray-700 font-medium truncate">
-            {branch.restaurant?.cuisine_types || 'Thai • Seafood'}
-          </span>
-          <span>•</span>
-          <span className="text-gray-600 truncate">
-            📍 {branch.city?.name || branch.address}
-          </span>
+          {locationLabel && (
+            <div className="text-[11px] text-gray-600 truncate">
+              📍 {locationLabel}
+            </div>
+          )}
+
+          {(supportsBooking || supportsPickup) && (
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+              {supportsBooking && (
+                <span className="text-[10px] font-bold bg-slate-100 text-gray-700 px-2 py-0.5 rounded-md">
+                  📅 Bookings
+                </span>
+              )}
+              {supportsPickup && (
+                <span className="text-[10px] font-bold bg-slate-100 text-gray-700 px-2 py-0.5 rounded-md">
+                  🛍️ Pickup
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 text-[11px]">
-          <div className="flex items-center gap-1.5 truncate">
-            {isOpen === null ? (
+          <div className="flex items-center gap-1.5 min-w-0">
+            {statusInfo === null ? (
               <span className="text-gray-400 font-medium">Checking hours...</span>
-            ) : isOpen ? (
+            ) : statusInfo.isOpen ? (
               <>
                 <span className="flex items-center gap-1 text-emerald-600 font-bold shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                   Open
                 </span>
                 <span className="text-gray-300">•</span>
-                <span className="text-gray-500 truncate">Closes {formattedClose || '11:00 PM'}</span>
+                <span className="text-gray-600 font-medium truncate">{statusInfo.hoursText}</span>
               </>
             ) : (
               <>
@@ -157,7 +229,7 @@ export default function RestaurantCard({ branch }) {
                   Closed
                 </span>
                 <span className="text-gray-300">•</span>
-                <span className="text-gray-500 truncate">Opens {formattedOpen || '08:00 AM'}</span>
+                <span className="text-gray-600 font-medium truncate">{statusInfo.hoursText}</span>
               </>
             )}
           </div>
