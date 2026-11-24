@@ -8,9 +8,14 @@ export default function BranchImageSlider({
   images,
   branchName,
   compact = false,
+  supportsPickup = true,
+  supportsBooking = true,
 }) {
   const validImages = (images || []).filter(Boolean);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const showPickup = supportsPickup !== undefined && supportsPickup !== null ? Boolean(supportsPickup) : true;
+  const showBooking = supportsBooking !== undefined && supportsBooking !== null ? Boolean(supportsBooking) : true;
 
   useEffect(() => {
     if (validImages.length <= 1) return;
@@ -84,14 +89,18 @@ export default function BranchImageSlider({
       )}
 
       {/* Bottom Left: Glass Action Pills (Full Card Mode) */}
-      {!compact && (
+      {!compact && (showPickup || showBooking) && (
         <div className="absolute bottom-3.5 left-3.5 flex items-center gap-2 z-10">
-          <span className="bg-black/40 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md">
-            <span>🛍️</span> Pickup
-          </span>
-          <span className="bg-black/40 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md">
-            <span>📅</span> Book Table
-          </span>
+          {showPickup && (
+            <span className="bg-black/40 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md">
+              <span>🛍️</span> Pickup
+            </span>
+          )}
+          {showBooking && (
+            <span className="bg-black/40 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md">
+              <span>📅</span> Book Table
+            </span>
+          )}
         </div>
       )}
 

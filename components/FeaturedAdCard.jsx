@@ -138,8 +138,8 @@ export default function FeaturedAdCard({ branch }) {
   }, [evaluateStatus]);
 
   const promoLabel = getBranchPromoSummary(branch);
-  const supportsBooking = branch.supports_booking !== undefined ? Boolean(branch.supports_booking) : true;
-  const supportsPickup = branch.supports_pickup !== undefined ? Boolean(branch.supports_pickup) : true;
+  const supportsBooking = branch.supports_booking !== undefined ? Boolean(branch.supports_booking) : false;
+  const supportsPickup = branch.supports_pickup !== undefined ? Boolean(branch.supports_pickup) : false;
 
   const hasReviewsCount =
     branch.reviews_count !== undefined &&
@@ -162,6 +162,8 @@ export default function FeaturedAdCard({ branch }) {
             branch.image_5,
           ]}
           branchName={restaurantName}
+          supportsPickup={supportsPickup}
+          supportsBooking={supportsBooking}
           compact
         />
 
@@ -234,16 +236,6 @@ export default function FeaturedAdCard({ branch }) {
             <span />
           )}
 
-          {(supportsBooking || supportsPickup) && (
-            <div className="flex items-center gap-1 text-[10px] font-semibold text-gray-600 shrink-0">
-              {supportsPickup && (
-                <span className="bg-slate-100 px-1.5 py-0.5 rounded-md">🛍️ Pickup</span>
-              )}
-              {supportsBooking && (
-                <span className="bg-slate-100 px-1.5 py-0.5 rounded-md">📅 Bookings</span>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </Link>

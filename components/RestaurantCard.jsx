@@ -138,8 +138,8 @@ export default function RestaurantCard({ branch }) {
   }, [evaluateStatus]);
 
   const promoLabel = getBranchPromoSummary(branch);
-  const supportsBooking = branch.supports_booking !== undefined ? Boolean(branch.supports_booking) : true;
-  const supportsPickup = branch.supports_pickup !== undefined ? Boolean(branch.supports_pickup) : true;
+  const supportsBooking = branch.supports_booking !== undefined ? Boolean(branch.supports_booking) : false;
+  const supportsPickup = branch.supports_pickup !== undefined ? Boolean(branch.supports_pickup) : false;
 
   const hasReviewsCount =
     branch.reviews_count !== undefined &&
@@ -154,15 +154,17 @@ export default function RestaurantCard({ branch }) {
       {/* Compact Image Slider + Favourite Toggle */}
       <div className="h-40 w-full shrink-0 relative">
         <BranchImageSlider
-          images={[
-            branch.image_1,
-            branch.image_2,
-            branch.image_3,
-            branch.image_4,
-            branch.image_5,
-          ]}
-          branchName={restaurantName}
-        />
+        images={[
+          branch.image_1,
+          branch.image_2,
+          branch.image_3,
+          branch.image_4,
+          branch.image_5,
+        ]}
+        branchName={restaurantName}
+        supportsPickup={supportsPickup}
+        supportsBooking={supportsBooking}
+      />
 
         <FavouriteButton
           isFavourite={isFavourite(branch.id)}
@@ -193,20 +195,6 @@ export default function RestaurantCard({ branch }) {
             </div>
           )}
 
-          {(supportsBooking || supportsPickup) && (
-            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-              {supportsBooking && (
-                <span className="text-[10px] font-bold bg-slate-100 text-gray-700 px-2 py-0.5 rounded-md">
-                  📅 Bookings
-                </span>
-              )}
-              {supportsPickup && (
-                <span className="text-[10px] font-bold bg-slate-100 text-gray-700 px-2 py-0.5 rounded-md">
-                  🛍️ Pickup
-                </span>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 text-[11px]">
